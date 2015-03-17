@@ -81,6 +81,9 @@ describe "Generating a manifest in cached mode" do
   it "doesn't contain a fallback section" do
     body.should_not =~ %r{^FALLBACK:}
   end
+  it "doesn't contain a settings section" do
+    body.should_not =~ %r{^SETTINGS:}
+  end
 
   it "does contain a network section" do
     self.class.app = self.class.new_app{ network "/" }
@@ -96,6 +99,14 @@ describe "Generating a manifest in cached mode" do
     with_session :new_app_with_offline do
       get "/"
       body.should =~ %r{^FALLBACK:}
+    end
+  end
+
+  it "does contain a settings section" do
+    self.class.app = self.class.new_app{ settings "prefer-online" }
+    with_session :new_app_with_offline do
+      get "/"
+      body.should =~ %r{^SETTINGS:}
     end
   end
 

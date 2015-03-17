@@ -5,6 +5,7 @@ module Rack
         @cache = []
         @network = []
         @fallback = {}
+        @settings = []
         @root = root
         instance_eval(&block) if block_given?
       end
@@ -20,7 +21,11 @@ module Rack
       def fallback(hash = {})
         @fallback.merge!(hash)
       end
-      
+     
+      def settings(*options)
+        @settings.concat(options)
+      end
+
       def root
         @root
       end

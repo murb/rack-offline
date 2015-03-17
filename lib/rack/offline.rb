@@ -57,6 +57,13 @@ module Rack
         end
       end
 
+      unless @config.settings.empty?
+        body << "" << "SETTINGS:"
+        @config.settings.each do |item|
+          body << (item.to_s)
+        end
+      end
+
       unless @config.fallback.empty?
         body << "" << "FALLBACK:"
         @config.fallback.each do |namespace, url|
