@@ -7,16 +7,19 @@ describe "Generating a basic manifest" do
     cache "images/masthead.png"
   end
 
+
   it_should_behave_like "a cache manifest"
 
   it "doesn't contain a network section" do
+    get "/"
     body.should_not =~ %r{^NETWORK:}
   end
 
   it "doesn't contain a fallback section" do
+    get "/"
     body.should_not =~ %r{^FALLBACK:}
   end
-  
+
   describe "cache-busting comment" do
     context "if no interval is specified" do
       self.app = Rack::Offline.configure do
@@ -31,7 +34,7 @@ describe "Generating a basic manifest" do
       self.app = Rack::Offline.configure(:cache_interval => INTERVAL) do
         cache "images/masthead.png"
       end
-      
+
       before do
         @interval = INTERVAL
       end
