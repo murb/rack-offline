@@ -33,15 +33,20 @@ end
 And when used with Rails asset pipeline:
 
 <pre lang="ruby">
-  if Rails.env.production?
-    offline = Rack::Offline.configure :cache_interval => 120 do      
-      cache ActionController::Base.helpers.asset_path("application.css")
-      cache ActionController::Base.helpers.asset_path("application.js")
-      # cache other assets
-      network "/"  
-    end
-    match "/application.manifest" => offline  
+  rack_offline = Rack::Offline.configure :cache_interval => (Rails.env == "development" ? 1 : 1000) do
+    # cache "images/masthead.png"
+
+    action_view = ActionView::Base.new
+    action_view.stylesheet_link_tag("application").split("\n").collect{|a|          cache a.match(/href=\"(.*)\"/)[1] }
+    action_view.javascript_include_tag("vendor/modernizr").split("\n").collect{|a|  cache a.match(/src=\"(.*)\"/)[1] }
+    action_view.javascript_include_tag("application").split("\n").collect{|a|       cache a.match(/src=\"(.*)\"/)[1] }
+
+    network "/"
+
+    fallback
   end
+
+  get "/application.manifest" => rack_offline
 </pre>
 
 You can pass an options Hash into #configure in Rack::Offline:
